@@ -25,7 +25,7 @@ async function downloadByUrl(url: string): Promise<Downloaded> {
       // }
 
       // const filename = res.headers["content-disposition"].split('filename=')[1].split(';')[0]
-      const filename = id
+      const filename = id + '.zip'
       return new Promise((resolve, reject) => {
         const path = join(__dirname, '../download/', filename)
         const writer = createWriteStream(path)
