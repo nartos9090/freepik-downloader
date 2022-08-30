@@ -8,23 +8,23 @@ axios.defaults.withCredentials = true
 
 const ID_PATTERN = /\d+?(?=\.htm)/
 
+axios.interceptors.request.use(
+  (config) => {
+    // @ts-ignore
+    config.headers.Cookie = readFileSync(COOKIE_FILE)
+    return config
+  }, function (error) {
+    // Do something with request error
+    return Promise.reject(error);
+  }
+)
+
 function setCookie(value: string) {
   if (existsSync(COOKIE_FILE)) {
     unlinkSync(COOKIE_FILE)
   }
   writeFileSync(COOKIE_FILE, value)
   console.info("Cookie set successfully")
-
-  axios.interceptors.request.use(
-    (config) => {
-      // @ts-ignore
-      config.headers.Cookie = readFileSync(COOKIE_FILE)
-      return config
-    }, function (error) {
-      // Do something with request error
-      return Promise.reject(error);
-    }
-  )
 
   return "Cookie set successfully"
 }
@@ -66,7 +66,7 @@ async function downloadByUrl(url: string): Promise<Downloaded> {
 
         writer.on('close', () => {
           if (!error) {
-            resolve(new Downloaded(path))
+            resolve(new Downloaded(path, filename))
           }
         })
       })
@@ -79,8 +79,10 @@ async function downloadByUrl(url: string): Promise<Downloaded> {
 
 class Downloaded {
   public path: string
-  constructor(path) {
+  public filename: string
+  constructor(path, filename) {
     this.path = path
+    this.filename = filename
   }
   delete(): void {
     unlinkSync(this.path)
