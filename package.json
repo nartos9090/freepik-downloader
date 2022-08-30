@@ -2,7 +2,8 @@
   "name": "freepik-premium-downloader",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.ts",
+  "main": "dist/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "prepare" : "npm run build",
     "build": "tsc"

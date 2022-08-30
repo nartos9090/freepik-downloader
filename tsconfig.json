@@ -3,10 +3,8 @@
     "module": "commonjs",
     "target": "es5",
     "declaration": true,
-    "outDir": "./dist",
-    "strict": true
+    "outDir": "./dist"
   },
-  "lib": ["es2015"],
   "include": ["src"],
   "exclude": ["storage", "node_modules"]
 }
