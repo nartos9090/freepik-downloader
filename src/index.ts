@@ -76,8 +76,7 @@ async function downloadByUrl(url: string): Promise<Downloaded> {
       })
     })
   } catch (e) {
-    console.log(e)
-    throw "Download failed"
+    throw e
   }
 }
 
