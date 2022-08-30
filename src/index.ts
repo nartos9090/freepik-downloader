@@ -10,9 +10,13 @@ const ID_PATTERN = /\d+?(?=\.htm)/
 
 axios.interceptors.request.use(
   (config) => {
-    // @ts-ignore
-    config.headers.Cookie = readFileSync(COOKIE_FILE)
-    return config
+    try {
+      // @ts-ignore
+      config.headers.Cookie = readFileSync(COOKIE_FILE)
+      return config
+    } catch (e) {
+      return Promise.reject('AXIOS ERROR')
+    }
   }, function (error) {
     // Do something with request error
     return Promise.reject('AXIOS ERROR')
