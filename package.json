@@ -5,10 +5,15 @@
   "main": "index.ts",
   "type": "module",
   "scripts": {
-    "prepare": "npm run build-ts",
-    "build-ts": "tsc",
+    "prepare" : "npm run build",
     "build": "tsc"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nartos9090/freepik-downloader"
+  },
+  "homepage": "https://github.com/nartos9090/freepik-downloader",
+  "files": ["dist/**/*"],
   "keywords": [],
   "author": "",
   "license": "ISC",
