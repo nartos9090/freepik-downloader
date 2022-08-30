@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "node index.ts"
+    "prepare": "npm run build-ts",
+    "build-ts": "tsc",
+    "build": "npx tsc"
   },
   "keywords": [],
   "author": "",
