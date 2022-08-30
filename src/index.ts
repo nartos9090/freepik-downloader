@@ -1,7 +1,7 @@
-const auth = require('./auth')
-const downloader = require('./downloader')
+import { setCookie } from './auth'
+import { downloadByUrl} from './downloader'
 
-module.exports = {
-  auth,
-  downloader
+export default {
+  setCookie,
+  downloadByUrl
 }
