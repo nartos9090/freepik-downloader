@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "dist/index.ts",
-  "type": "module",
   "scripts": {
     "prepare" : "npm run build",
     "build": "tsc"
