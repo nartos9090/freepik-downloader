@@ -1,0 +1,22 @@
+{
+  "name": "freepik-premium-downloader",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.ts",
+  "scripts": {
+    "start": "node index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "fs-extra": "^10.1.0",
+    "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "@types/node": "^18.7.2",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4"
+  }
+}
