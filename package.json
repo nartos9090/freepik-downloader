@@ -12,6 +12,10 @@
     "type": "git",
     "url": "git+https://github.com/nartos9090/freepik-downloader"
   },
+  "directories": {
+    "storage": "storage",
+    "download": "download"
+  },
   "homepage": "https://github.com/nartos9090/freepik-downloader",
   "files": ["dist/**/*"],
   "keywords": [],
