@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepare" : "npm run build",
+    "prepare": "npm run build",
     "build": "tsc"
   },
   "repository": {
@@ -13,14 +13,21 @@
     "url": "git+https://github.com/nartos9090/freepik-downloader"
   },
   "homepage": "https://github.com/nartos9090/freepik-downloader",
-  "files": ["dist/**/*", "storage/**/*", "download/**/*"],
+  "files": [
+    "dist/**/*",
+    "storage/**/*",
+    "download/**/*"
+  ],
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.27.2",
+    "cookie-parse": "^0.4.0",
     "fs-extra": "^10.1.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "puppeteer": "^17.1.3",
+    "set-cookie-parser": "^2.5.1"
   },
   "devDependencies": {
     "@types/node": "^18.7.2",

@@ -3,7 +3,8 @@
     "module": "commonjs",
     "target": "es5",
     "declaration": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src"],
   "exclude": ["storage", "node_modules"]
