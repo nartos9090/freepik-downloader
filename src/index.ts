@@ -1,5 +1,5 @@
 import {setCookie} from './cookie'
-import {downloadByUrl} from './downloader'
+import {downloadByUrl} from './puppeteer'
 
 export default {
   setCookie,

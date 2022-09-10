@@ -42,7 +42,7 @@ const boot = async () => {
   booted = true
 }
 
-const downloadByUrl = async (url: string) => {
+export const downloadByUrl = async (url: string) => {
   await boot()
   await page.goto(url)
   await new Promise((resolve, reject) => {
@@ -82,8 +82,4 @@ class Downloaded {
   get(): Buffer {
     return readFileSync(this.path);
   }
-}
-
-export default {
-  downloadByUrl
 }
