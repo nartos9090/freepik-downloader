@@ -42,7 +42,7 @@ const boot = async () => {
   booted = true
 }
 
-export const downloadByUrl = async (url: string) => {
+export const downloadByUrl = async (url: string): Promise<Downloaded> => {
   await boot()
   await page.goto(url)
   await new Promise((resolve, reject) => {
@@ -59,14 +59,14 @@ export const downloadByUrl = async (url: string) => {
       const file = files.find((v) => v.includes(filename) && !v.includes('.crdownload'))
       if (file) {
         const downloaded = new Downloaded(DOWNLOAD_PATH + '/' + file, file)
-        resolve(file)
+        resolve(downloaded)
         clearInterval(interval)
       }
     }, 2000)
   })
 }
 
-class Downloaded {
+export class Downloaded {
   public path: string
   public filename: string
 
