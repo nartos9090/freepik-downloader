@@ -12,7 +12,7 @@ export function setCookie(value: string) {
   return "Cookie set successfully"
 }
 
-function saveCookie(cookie: Object) {
+export function saveCookie(cookie: Object) {
   if (existsSync(COOKIE_FILE)) {
     unlinkSync(COOKIE_FILE)
   }

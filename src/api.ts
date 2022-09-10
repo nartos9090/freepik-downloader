@@ -9,8 +9,12 @@ app.get('/download', async (req, res) => {
 
   try {
     const file = await freepik.downloadByUrl(url)
-    return res.download(file.path)
+    await res.download(file.path)
+    setTimeout(() => {
+      file.delete()
+    }, 100000)
   } catch (e) {
+    console.log(e)
     return res.status(500).json({ error: 'Internal Server Error' })
   }
 })
@@ -22,5 +26,5 @@ app.post('/set-cookie', async (req, res) => {
 })
 
 app.listen(port, () => {
-  console.log(`Llistening on port ${port}`)
+  console.log(`Listening on port ${port}`)
 })

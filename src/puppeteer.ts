@@ -1,9 +1,7 @@
-import axios from './axios'
 import {join, resolve} from 'path'
-import {readFileSync, unlinkSync, createWriteStream, readdirSync} from "fs";
-import {checkAndRefreshCookie, getSavedCookie} from "./cookie";
+import {readFileSync, unlinkSync, readdirSync} from "fs";
+import {getSavedCookie, saveCookie} from "./cookie";
 import puppeteer, {Browser} from 'puppeteer'
-import {readdir} from "fs/promises";
 
 const DOWNLOAD_PATH = resolve('./download')
 const DOWNLOAD_BUTTON_SELECTOR = 'a.download-button'
@@ -43,27 +41,51 @@ const boot = async () => {
 }
 
 export const downloadByUrl = async (url: string): Promise<Downloaded> => {
-  await boot()
-  await page.goto(url)
-  await new Promise((resolve, reject) => {
-    setTimeout(() => {
-      resolve(true)
-    }, 5000)
-  })
-  await page.click(DOWNLOAD_BUTTON_SELECTOR)
+  try {
+    await boot()
+    await page.goto(url)
+    await new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(true)
+      }, 5000)
+    })
+    await page.click(DOWNLOAD_BUTTON_SELECTOR)
+    console.info('downloading', url)
 
-  return new Promise((resolve, reject) => {
-    const filename = url.replace(/^https?:\/\//, '').split('/')[2].split('_')[0]
-    const interval = setInterval(() => {
-      const files = readdirSync(DOWNLOAD_PATH + '/')
-      const file = files.find((v) => v.includes(filename) && !v.includes('.crdownload'))
-      if (file) {
-        const downloaded = new Downloaded(DOWNLOAD_PATH + '/' + file, file)
-        resolve(downloaded)
-        clearInterval(interval)
-      }
-    }, 2000)
-  })
+    refreshCookie(await page.cookies())
+    console.info('refresh cookie')
+
+    return new Promise((res, rej) => {
+      const filename = url.replace(/^https?:\/\//, '').split('/')[2].split('_')[0]
+      let counter = 0
+      const interval = setInterval(() => {
+        const files = readdirSync(DOWNLOAD_PATH + '/')
+        const file = files.find((v) => v.includes(filename) && !v.includes('.crdownload'))
+        if (file) {
+          const downloaded = new Downloaded(join(resolve('./download'), './' + file), file)
+          console.info('downloaded', url)
+          res(downloaded)
+          clearInterval(interval)
+        }
+        if (counter >= 100) {
+          console.error('failed to download', url)
+          rej()
+        }
+        counter++
+      }, 2000)
+    })
+  } catch (e) {
+    throw new Error('failed to download')
+  }
+}
+
+function refreshCookie(cookie: puppeteer.Protocol.Network.Cookie[]) {
+  const cookiesObject = cookie.reduce((a, c) => {
+    a[c.name] = c.value
+    return a
+  }, {})
+
+  saveCookie(cookiesObject)
 }
 
 export class Downloaded {
