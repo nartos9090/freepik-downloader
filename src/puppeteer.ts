@@ -15,9 +15,9 @@ let page: puppeteer.Page
 let booted = false
 
 const boot = async () => {
-  // if (booted) {
-  //   return
-  // }
+  if (booted) {
+    return
+  }
   let bootUrl = 'https://freepik.com'
 
   /* Launch new instance */
