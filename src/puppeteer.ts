@@ -75,6 +75,7 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
       }, 2000)
     })
   } catch (e) {
+    console.error(e)
     throw new Error('failed to download')
   }
 }
