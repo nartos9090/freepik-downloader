@@ -5,8 +5,8 @@ const express = require('express')
 const app = express()
 const port = 3000
 
-app.use(bodyParser.urlencoded({extended: false}))
-app.use(bodyParser.json())
+// app.use(bodyParser.urlencoded({extended: false}))
+// app.use(bodyParser.json())
 
 app.get('/download', async (req, res) => {
   const url = req.query.url
@@ -23,8 +23,7 @@ app.get('/download', async (req, res) => {
   }
 })
 
-app.post('/set-cookie', async (req, res) => {
-  console.log(req.data)
+app.post('/set-cookie',bodyParser.urlencoded({extended: false}), async (req, res) => {
   const cookie = req.body.cookie
   freepik.setCookie(cookie)
   return res.status(200).end()
