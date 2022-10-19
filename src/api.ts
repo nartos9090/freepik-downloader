@@ -25,7 +25,7 @@ app.get('/download', async (req, res) => {
 
 app.post('/set-cookie',bodyParser.urlencoded({extended: false}), async (req, res) => {
   const cookie = req.body.cookie
-  freepik.setCookie(cookie)
+  await freepik.setCookie(cookie)
   return res.status(200).end()
 })
 

@@ -89,6 +89,14 @@ function refreshCookie(cookie: puppeteer.Protocol.Network.Cookie[]) {
   saveCookie(cookiesObject)
 }
 
+export async function reboot() {
+  if (booted) {
+    await browser.close()
+    browser = null
+    booted = false
+  }
+}
+
 export class Downloaded {
   public path: string
   public filename: string

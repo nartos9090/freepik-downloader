@@ -3,11 +3,13 @@ import {existsSync, readFileSync, unlinkSync, writeFileSync} from 'fs'
 import {COOKIE_FILE} from "./constants";
 import axios from "./axios";
 import {parse as setCookieParse} from 'set-cookie-parser'
+import {reboot} from './puppeteer'
 
-export function setCookie(value: string) {
+export async function setCookie(value: string) {
   const cookie = cookieParse(value)
   saveCookie(cookie)
   console.info("Cookie set successfully")
+  await reboot()
 
   return "Cookie set successfully"
 }
