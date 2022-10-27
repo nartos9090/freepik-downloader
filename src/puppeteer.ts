@@ -90,6 +90,7 @@ function refreshCookie(cookie: puppeteer.Protocol.Network.Cookie[]) {
 }
 
 export async function reboot() {
+  console.log('REBOOT')
   if (booted) {
     await browser.close()
     browser = null
