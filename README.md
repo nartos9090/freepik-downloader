@@ -35,7 +35,10 @@ Run ```npm install git+https://github.com/nartos9090/freepik-downloader```.
 
 Example
 ```ts
-const {downloadByUrl, refreshCookie} = require('freepik-premium-downloader')
+const {downloadByUrl, setCookie} = require('freepik-premium-downloader')
+
+// set cookie
+setCookie('your raw string cookies')
 
 // download an asset
 const asset = await downloadByUrl('FREEPIK_ASSET_URL')
