@@ -23,6 +23,21 @@ app.get('/download', async (req, res) => {
   }
 })
 
+app.get('/v2/download', async (req, res) => {
+  const url = req.query.url
+
+  try {
+    const file = await freepik.downloadByUrlV2(url)
+    await res.json(file)
+    setTimeout(() => {
+      file.delete()
+    }, 100000)
+  } catch (e) {
+    console.log(e)
+    return res.status(500).json({ error: 'Internal Server Error' })
+  }
+})
+
 app.post('/set-cookie',bodyParser.urlencoded({extended: false}), async (req, res) => {
   const cookie = req.body.cookie
   await freepik.setCookie(cookie)

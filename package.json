@@ -8,8 +8,7 @@
     "prepare": "npm run build",
     "build": "tsc --build --clean && tsc",
     "api": "node dist/api.js",
-    "dev:api": "ts-node src/api.ts",
-    "dev:apiv2": "ts-node src/api-v2.ts"
+    "dev:api": "ts-node src/api.ts"
   },
   "repository": {
     "type": "git",
