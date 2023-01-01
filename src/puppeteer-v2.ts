@@ -1,5 +1,5 @@
 import {join, resolve} from 'path'
-import {readFileSync, unlinkSync, readdirSync} from "fs";
+import {readFileSync, unlinkSync, readdirSync, statSync} from "fs";
 import {getSavedCookie, saveCookie} from "./cookie";
 import puppeteer, {Browser} from 'puppeteer'
 
@@ -19,7 +19,7 @@ const boot = async () => {
   let bootUrl = 'https://freepik.com'
 
   /* Launch new instance */
-  browser = await puppeteer.launch({headless: true})
+  browser = await puppeteer.launch({headless: false})
   page = await browser.newPage()
   await page.goto(bootUrl)
 
@@ -123,12 +123,17 @@ export class Downloaded {
   public filename: string
   public thumbnail: string
   public count: number
+  public size: number
+  public mime: string
 
   constructor(path, filename, thumbnail, count) {
     this.path = path
     this.filename = filename
     this.thumbnail = thumbnail
     this.count = count
+    const stat = statSync(path)
+    this.size = stat.size
+    // this.mime = mimeTypes.contentType(path.extname(path))
   }
 
   delete(): void {
@@ -145,6 +150,8 @@ export class Downloaded {
       filename: this.filename,
       thumbnail: this.thumbnail,
       count: this.count,
+      size: this.size,
+      // mime: this.mime,
     }
   }
 }

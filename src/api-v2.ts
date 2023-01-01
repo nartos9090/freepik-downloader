@@ -2,13 +2,13 @@ import freepik from './index'
 const bodyParser = require('body-parser')
 const express = require('express')
 
-const app = express().prefix('/v2')
+const app = express()
 const port = 3002
 
 // app.use(bodyParser.urlencoded({extended: false}))
 // app.use(bodyParser.json())
 
-app.get('/download', async (req, res) => {
+app.get('/v2/download', async (req, res) => {
   const url = req.query.url
 
   try {
