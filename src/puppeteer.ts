@@ -4,7 +4,7 @@ import {getSavedCookie, saveCookie} from "./cookie";
 import puppeteer, {Browser} from 'puppeteer'
 
 const DOWNLOAD_PATH = resolve('./download')
-const DOWNLOAD_BUTTON_SELECTOR = 'a.download-button'
+const DOWNLOAD_BUTTON_SELECTOR = 'button.download-button'
 
 const ID_PATTERN = /\d+?(?=\.htm)/
 

@@ -4,7 +4,7 @@ import {getSavedCookie, saveCookie} from "./cookie";
 import puppeteer, {Browser} from 'puppeteer'
 
 const DOWNLOAD_PATH = resolve('./download')
-const DOWNLOAD_BUTTON_SELECTOR = 'a.download-button'
+const DOWNLOAD_BUTTON_SELECTOR = 'button.download-button'
 
 const ID_PATTERN = /\d+?(?=\.htm)/
 
@@ -19,7 +19,7 @@ const boot = async () => {
   let bootUrl = 'https://freepik.com'
 
   /* Launch new instance */
-  browser = await puppeteer.launch({headless: true})
+  browser = await puppeteer.launch({headless: false})
   page = await browser.newPage()
   await page.goto(bootUrl)
 
