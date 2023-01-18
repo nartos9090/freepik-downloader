@@ -19,7 +19,7 @@ const boot = async () => {
   let bootUrl = 'https://freepik.com'
 
   /* Launch new instance */
-  browser = await puppeteer.launch({headless: false})
+  browser = await puppeteer.launch({headless: true})
   page = await browser.newPage()
   await page.goto(bootUrl)
 
