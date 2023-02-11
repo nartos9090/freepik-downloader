@@ -1,5 +1,5 @@
 import freepik from '../index'
-import {APP_PORT} from "./config";
+import {API_PORT} from "./config";
 import downloadQueue, {setLoggedIn} from "./queue";
 
 const bodyParser = require('body-parser')
@@ -57,6 +57,6 @@ app.post('/v2/queue', async (req, res) => {
   return res.json(item)
 })
 
-app.listen(APP_PORT, () => {
-  console.log(`Listening on port ${APP_PORT}`)
+app.listen(API_PORT, () => {
+  console.log(`Listening on port ${API_PORT}`)
 })
