@@ -5,8 +5,7 @@ import puppeteer, {Browser} from 'puppeteer'
 
 const DOWNLOAD_PATH = resolve('./download')
 const DOWNLOAD_BUTTON_SELECTOR = 'button.download-button'
-
-const ID_PATTERN = /\d+?(?=\.htm)/
+const EXPIRED_DOWNLOAD_BUTTON_SELECTOR = '#download-file'
 
 let browser: Browser
 let page: puppeteer.Page
@@ -19,7 +18,7 @@ const boot = async () => {
   let bootUrl = 'https://freepik.com'
 
   /* Launch new instance */
-  browser = await puppeteer.launch({headless: true})
+  browser = await puppeteer.launch({headless: false})
   page = await browser.newPage()
   await page.goto(bootUrl)
 
@@ -50,6 +49,15 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
       }, 5000)
     })
 
+    const isLoggedOut = await page.evaluate(() => {
+      const el = document.querySelector('#download-file')
+      return Boolean(el)
+    })
+
+    if (isLoggedOut) {
+      throw new Error('token expired')
+    }
+
     const counter = await page.evaluate(() => {
       const counterRaw = document.getElementById('icons_downloaded_counters')?.innerHTML
       if (counterRaw) {
@@ -58,11 +66,7 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
       return null
     })
 
-    if (counter?.[1] !== 100) {
-      throw new Error('token expired')
-    }
-
-    const count = counter[0]
+    const count = counter?.[0] || 0
 
     const thumbnail = await page.evaluate(() => {
       const thumb = document.querySelector('.thumb')
@@ -96,7 +100,7 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
     })
   } catch (e) {
     console.error(e)
-    throw new Error('failed to download')
+    throw new Error(e)
   }
 }
 
@@ -140,8 +144,9 @@ export class Downloaded {
     unlinkSync(this.path)
   }
 
-  get(): Buffer {
-    return readFileSync(this.path);
+  get(encode: boolean = false): Buffer {
+    // @ts-ignore
+    return readFileSync(this.path, { ...encode && { encoding: 'base64' } });
   }
 
   toJSON() {
