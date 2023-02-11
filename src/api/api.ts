@@ -1,6 +1,6 @@
 import freepik from '../index'
 import {APP_PORT} from "./config";
-import downloadQueue from "./queue";
+import downloadQueue, {setLoggedIn} from "./queue";
 
 const bodyParser = require('body-parser')
 const express = require('express')
@@ -43,6 +43,7 @@ app.get('/v2/download', async (req, res) => {
 app.post('/set-cookie', async (req, res) => {
   const cookie = req.body.cookie
   await freepik.setCookie(cookie)
+  setLoggedIn()
   return res.status(200).end()
 })
 
