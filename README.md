@@ -28,6 +28,39 @@ curl -X POST -H "Content-Type: application/json" \
 ```
 5. Start download a premium asset by this URL. ```http://localhost:3000/download?url=FREEPIK_URL```. example ```http://localhost:3000/download?url=https://www.freepik.com/premium-vector/continuous-one-line-drawing-thank-you-text_11439558.htm#query=thankyou&position=6&from_view=search&track=sph```.
 
+## Queue & Webhook
+Queue feature now supported. You can send a download request and wait for the download to complete and sent through your webhook url.
+```
+curl -X POST -H "Content-Type: application/json" \
+    -d '{"download_url": "FREEPIK ASSET URL", "webhook_url": "YOUR WEBHOOK URL"}' \
+    http://localhost:3000/v2/queue
+```
+
+It will returns a unique id to save.
+```
+{
+    "webhook_url": "YOUR WEBHOOK URL",
+    "download_url": "FREEPIK ASSET URL",
+    "status": "queued",
+    "id": "63e75fd1e8e5b664aaa7daf2"
+}
+```
+
+After the download is completed, you will get data through your webhook url.
+```
+{
+    "status": "completed", // status can be failed, completed, or token expired
+    "id": "63e75fd1e8e5b664aaa7daf2",
+    "download_url": "FREEPIK ASSET URL",
+    "size": "20391231",
+    "filename": "premium-asset.jpg",
+    "thumbnail": "THUMBNAIL URL",
+    "count": 4, // download limit usage
+    "file": "BASE64 ENCODED FILE",
+}
+```
+
+
 ## Integrate with your own system
 You can also integrate this downloader with your own script.
 
