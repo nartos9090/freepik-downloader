@@ -1,12 +1,14 @@
-import freepik from './index'
+import freepik from '../index'
+import {APP_PORT} from "./config";
+import downloadQueue from "./queue";
+
 const bodyParser = require('body-parser')
 const express = require('express')
 
 const app = express()
-const port = 3000
 
-// app.use(bodyParser.urlencoded({extended: false}))
-// app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.json())
 
 app.get('/download', async (req, res) => {
   const url = req.query.url
@@ -38,12 +40,22 @@ app.get('/v2/download', async (req, res) => {
   }
 })
 
-app.post('/set-cookie',bodyParser.urlencoded({extended: false}), async (req, res) => {
+app.post('/set-cookie', async (req, res) => {
   const cookie = req.body.cookie
   await freepik.setCookie(cookie)
   return res.status(200).end()
 })
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`)
+app.post('/v2/queue', async (req, res) => {
+  const { webhook_url, download_url } = req.body
+  const item = await downloadQueue.add({
+    webhook_url,
+    download_url,
+  })
+  downloadQueue.start()
+  return res.json(item)
+})
+
+app.listen(APP_PORT, () => {
+  console.log(`Listening on port ${APP_PORT}`)
 })
