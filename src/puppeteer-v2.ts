@@ -8,7 +8,7 @@ const DOWNLOAD_BUTTON_SELECTOR = 'button.download-button'
 
 export const downloadByUrl = async (url: string): Promise<Downloaded> => {
     let bootUrl = 'https://freepik.com'
-    const browser = await puppeteer.launch({headless: false})
+    const browser = await puppeteer.launch({headless: true})
     const page = await browser.newPage()
 
     await page.goto(bootUrl)
