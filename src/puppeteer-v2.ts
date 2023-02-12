@@ -6,19 +6,16 @@ import puppeteer, {Browser} from 'puppeteer'
 const DOWNLOAD_PATH = resolve('./download')
 const DOWNLOAD_BUTTON_SELECTOR = 'button.download-button'
 
-export const downloadByUrl = async (url: string): Promise<Downloaded> => {
-    let bootUrl = 'https://freepik.com'
-    const browser = await puppeteer.launch({headless: true})
-    const page = await browser.newPage()
+let browser: Browser
+let page: puppeteer.Page
 
+let bootUrl = 'https://freepik.com'
+
+const boot = async () => {
+    /* Launch new instance */
+    browser = await puppeteer.launch({headless: true})
+    page = await browser.newPage()
     await page.goto(bootUrl)
-
-    /* Set cookies */
-    const cookiesObject = getSavedCookie()
-    const cookies = Object.keys(cookiesObject).map(key => ({name: key, value: cookiesObject[key]}))
-
-    await page.setCookie(...cookies)
-    await page.cookies(bootUrl)
 
     /* Set download behaviour */
     const client = await page.target().createCDPSession()
@@ -26,6 +23,21 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
         behavior: 'allow',
         downloadPath: DOWNLOAD_PATH,
     })
+}
+
+const setCookie = async () => {
+    const cookiesObject = getSavedCookie()
+    const cookies = Object.keys(cookiesObject).map(key => ({name: key, value: cookiesObject[key]}))
+
+    await page.setCookie(...cookies)
+    await page.cookies(bootUrl)
+}
+
+export const downloadByUrl = async (url: string): Promise<Downloaded> => {
+    if (!browser) {
+        await boot()
+    }
+    await setCookie()
 
     try {
         await page.goto(url)
@@ -82,8 +94,6 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
     } catch (e) {
         console.error(e)
         throw new Error(e)
-    } finally {
-        browser.close()
     }
 }
 
