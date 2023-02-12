@@ -49,8 +49,7 @@ const download = async (item) => {
         payload.filename = file.filename
         payload.thumbnail = file.thumbnail
         payload.count = file.count
-        payload.file = file.get(true)
-        await item.updateOne({status: 'completed'})
+        await item.updateOne({status: 'completed', filename: file.filename})
     } catch (e) {
         console.log('failed to download', item.download_url)
         if (e.message === 'Error: token expired') {
@@ -63,12 +62,10 @@ const download = async (item) => {
         }
     }
 
-    console.log('sending file', item.download_url)
     // TODO: add retry for failure
-    await axios.post(item.webhook_url, payload, {maxBodyLength: Infinity, maxContentLength: Infinity})
+    await axios.post(item.webhook_url, payload)
         .then((res) => {
-            console.log(res.status, res.data)
-            file?.delete()
+            console.log('notification sent', item.download_url)
         }).catch((e) => {
             console.log(e?.message || e?.response?.data || e)
         })

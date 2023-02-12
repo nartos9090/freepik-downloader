@@ -13,6 +13,10 @@ export const Queue = mongoose.model('Queue', new mongoose.Schema({
             type: String,
             required: true
         },
+        filename: {
+            type: String,
+            required: false
+        },
         status: {
             type: String,
             enum: ['queued', 'downloading', 'completed', 'failed'],

@@ -70,7 +70,6 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
         console.info('downloading', url)
 
         refreshCookie(await page.cookies())
-        console.info('refresh cookie')
 
         return await new Promise((res, rej) => {
             const filename = url.replace(/^https?:\/\//, '').split('/')[2].split('_')[0]
