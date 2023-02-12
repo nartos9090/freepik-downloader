@@ -65,8 +65,10 @@ const download = async (item) => {
 
     // TODO: add retry for failure
     await axios.post(item.webhook_url, payload, {maxBodyLength: Infinity, maxContentLength: Infinity})
-        .then(() => {
+        .then((res) => {
             file?.delete()
+        }).catch((e) => {
+            console.log(e?.message || e?.response?.data || e)
         })
 }
 
