@@ -63,9 +63,11 @@ const download = async (item) => {
         }
     }
 
+    console.log('sending file', item.download_url)
     // TODO: add retry for failure
     await axios.post(item.webhook_url, payload, {maxBodyLength: Infinity, maxContentLength: Infinity})
         .then((res) => {
+            console.log(res.status, res.data)
             file?.delete()
         }).catch((e) => {
             console.log(e?.message || e?.response?.data || e)
