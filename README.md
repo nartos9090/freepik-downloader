@@ -46,7 +46,7 @@ It will returns a unique id to save.
 }
 ```
 
-After the download is completed, you will get data through your webhook url.
+After the download is completed, you will get notification through your webhook url.
 ```
 {
     "status": "completed", // status can be failed, completed, or token expired
@@ -56,9 +56,10 @@ After the download is completed, you will get data through your webhook url.
     "filename": "premium-asset.jpg",
     "thumbnail": "THUMBNAIL URL",
     "count": 4, // download limit usage
-    "file": "BASE64 ENCODED FILE",
 }
 ```
+
+Download the completed queue by the url ```/v2/queue/download?id=63e75fd1e8e5b664aaa7daf2```
 
 
 ## Integrate with your own system
