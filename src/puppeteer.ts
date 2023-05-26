@@ -1,7 +1,7 @@
 import {join, resolve} from 'path'
 import {readFileSync, unlinkSync, readdirSync} from "fs";
 import {getSavedCookie, saveCookie} from "./cookie";
-import puppeteer, {Browser} from 'puppeteer'
+import puppeteer, {Browser, Page, Protocol} from 'puppeteer'
 
 const DOWNLOAD_PATH = resolve('./download')
 const DOWNLOAD_BUTTON_SELECTOR = 'button.download-button'
@@ -9,7 +9,7 @@ const DOWNLOAD_BUTTON_SELECTOR = 'button.download-button'
 const ID_PATTERN = /\d+?(?=\.htm)/
 
 let browser: Browser
-let page: puppeteer.Page
+let page: Page
 let booted = false
 
 const boot = async () => {
@@ -27,7 +27,8 @@ const boot = async () => {
   const cookiesObject = getSavedCookie()
   const cookies = Object.keys(cookiesObject).map(key => ({name: key, value: cookiesObject[key]}))
 
-  await page.setCookie(...cookies)
+  const excludeCookie = ['OptanonConsent']
+  await page.setCookie(...cookies.filter((cookie) => !excludeCookie.includes(cookie.name)))
   await page.cookies(bootUrl)
 
   /* Set download behaviour */
@@ -80,7 +81,7 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
   }
 }
 
-function refreshCookie(cookie: puppeteer.Protocol.Network.Cookie[]) {
+function refreshCookie(cookie: Protocol.Network.CookieParam[]) {
   const cookiesObject = cookie.reduce((a, c) => {
     a[c.name] = c.value
     return a

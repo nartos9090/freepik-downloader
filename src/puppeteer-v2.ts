@@ -1,13 +1,13 @@
 import {join, resolve} from 'path'
 import {readdirSync, readFileSync, statSync, unlinkSync} from "fs";
 import {getSavedCookie, saveCookie} from "./cookie";
-import puppeteer, {Browser} from 'puppeteer'
+import puppeteer, {Browser, Page, Protocol} from 'puppeteer'
 
 const DOWNLOAD_PATH = resolve('./download')
 const DOWNLOAD_BUTTON_SELECTOR = 'button.download-button'
 
 let browser: Browser
-let page: puppeteer.Page
+let page: Page
 
 let bootUrl = 'https://freepik.com'
 
@@ -26,10 +26,22 @@ const boot = async () => {
 }
 
 const setCookie = async () => {
+    const excludeCookie = ['OptanonConsent']
     const cookiesObject = getSavedCookie()
-    const cookies = Object.keys(cookiesObject).map(key => ({name: key, value: cookiesObject[key]}))
+    const cookies = Object.keys(cookiesObject)
+        .map((key, index): Protocol.Network.CookieParam => ({
+            name: key,
+            domain: '.freepik.com',
+            // expires: ,
+            // priority: ,
+            // sameParty: ,
+            // sourceScheme: ,
+            // sourcePort: ,
+            // partitionKey: ,
+            value: cookiesObject[key]
+        }))
 
-    await page.setCookie(...cookies)
+    await page.setCookie(...cookies.filter((cookie) => !excludeCookie.includes(cookie.name)))
     await page.cookies(bootUrl)
 }
 
@@ -96,7 +108,7 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
     }
 }
 
-function refreshCookie(cookie: puppeteer.Protocol.Network.Cookie[]) {
+function refreshCookie(cookie: Protocol.Network.CookieParam[]) {
     const cookiesObject = cookie.reduce((a, c) => {
         a[c.name] = c.value
         return a
