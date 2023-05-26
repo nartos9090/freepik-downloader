@@ -59,6 +59,8 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
             }, 5000)
         })
 
+        await page.waitForSelector('#icons_downloaded_counters')
+
         const counter = await page.evaluate(() => {
             const counterRaw = document.getElementById('icons_downloaded_counters')?.innerHTML
             if (counterRaw) {
