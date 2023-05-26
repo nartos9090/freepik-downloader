@@ -2,6 +2,9 @@ import {join, resolve} from 'path'
 import {readdirSync, readFileSync, statSync, unlinkSync} from "fs";
 import {getSavedCookie, saveCookie} from "./cookie";
 import puppeteer, {Browser, Page, Protocol} from 'puppeteer'
+import * as dotenv from 'dotenv'
+
+dotenv.config()
 
 const DOWNLOAD_PATH = resolve('./download')
 const DOWNLOAD_BUTTON_SELECTOR = 'button.download-button'
@@ -11,9 +14,18 @@ let page: Page
 
 let bootUrl = 'https://freepik.com'
 
+const PUPPETEER_ARGS = process.env.PUPPETEER_ARGS?.split(',').map((arg) => arg.trim())
+const PUPPETEER_HEADLESS = process.env.PUPPETEER_HEADLESS === 'true'
+const PUPPETEER_EXECUTABLE_PATH = process.env.PUPPETEER_EXECUTABLE_PATH
+
 const boot = async () => {
     /* Launch new instance */
-    browser = await puppeteer.launch({headless: true})
+    browser = await puppeteer.launch({
+        executablePath: PUPPETEER_EXECUTABLE_PATH || undefined,
+        headless: PUPPETEER_HEADLESS,
+        args: PUPPETEER_ARGS
+    })
+
     page = await browser.newPage()
     await page.goto(bootUrl)
 
