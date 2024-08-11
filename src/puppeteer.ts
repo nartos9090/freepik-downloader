@@ -1,7 +1,7 @@
 import {join, resolve} from 'path'
 import {readFileSync, unlinkSync, readdirSync} from "fs";
 import {getSavedCookie, saveCookie} from "./cookie";
-import puppeteer, {Browser, Page, Protocol} from 'puppeteer'
+import puppeteer, {Browser, Cookie, Page, Protocol} from 'puppeteer'
 import * as dotenv from 'dotenv'
 
 dotenv.config()
@@ -92,7 +92,7 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
     }
 }
 
-function refreshCookie(cookie: Protocol.Network.CookieParam[]) {
+function refreshCookie(cookie: Cookie[]) {
     const cookiesObject = cookie.reduce((a, c) => {
         a[c.name] = c.value
         return a

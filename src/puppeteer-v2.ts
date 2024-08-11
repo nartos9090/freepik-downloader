@@ -1,12 +1,13 @@
 import {join, resolve} from 'path'
 import {readdirSync, readFileSync, statSync, unlinkSync} from "fs";
 import {getSavedCookie, saveCookie} from "./cookie";
-import puppeteer, {Browser, Page, Protocol} from 'puppeteer'
+import puppeteer, {Browser, CookieParam, Page} from 'puppeteer'
 import * as dotenv from 'dotenv'
 
 dotenv.config()
 
 const DOWNLOAD_PATH = resolve('./download')
+const ICON_DOWNLOAD_COUNTER_SELECTOR = 'a[href="/user/downloads#from-element=dropdown_menu"]'
 const DOWNLOAD_BUTTON_SELECTOR = 'button.download-button'
 
 let browser: Browser
@@ -41,26 +42,24 @@ const setCookie = async () => {
     const excludeCookie = ['OptanonConsent']
     const cookiesObject = getSavedCookie()
     const cookies = Object.keys(cookiesObject)
-        .map((key, index): Protocol.Network.CookieParam => ({
+        .map((key, index): CookieParam => ({
             name: key,
             domain: '.freepik.com',
-            // expires: ,
-            // priority: ,
-            // sameParty: ,
-            // sourceScheme: ,
-            // sourcePort: ,
-            // partitionKey: ,
+            path: '/',
             value: cookiesObject[key]
         }))
 
-    await page.setCookie(...cookies.filter((cookie) => !excludeCookie.includes(cookie.name)))
+    await page.setCookie(...(cookies.filter((cookie) => !excludeCookie.includes(cookie.name))))
     await page.cookies(bootUrl)
+
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
 }
 
 export const downloadByUrl = async (url: string): Promise<Downloaded> => {
     if (!browser) {
         await boot()
     }
+
     await setCookie()
 
     try {
@@ -71,18 +70,34 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
             }, 5000)
         })
 
-        await page.waitForSelector('#icons_downloaded_counters')
+        await page.waitForSelector('button:has(img[alt="avatar"])', {timeout: 10000}).catch(() => {
+            throw new Error('Token expired 1')
+        })
 
-        const counter = await page.evaluate(() => {
-            const counterRaw = document.getElementById('icons_downloaded_counters')?.innerHTML
+        await page.click('button:has(img[alt="avatar"])')
+
+        await new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve(true)
+            }, 1000)
+        })
+
+        await page.waitForSelector(ICON_DOWNLOAD_COUNTER_SELECTOR, {timeout: 10000}).catch(() => {
+            throw new Error('Token expired 2')
+        })
+
+        const counter = await page.evaluate((ICON_DOWNLOAD_COUNTER_SELECTOR) => {
+            const counterRaw = ((document.querySelector(ICON_DOWNLOAD_COUNTER_SELECTOR)?.parentElement?.childNodes[1] as HTMLDivElement)?.childNodes[0] as HTMLDivElement)?.innerText
             if (counterRaw) {
                 return counterRaw.split('/').map(Number)
             }
             return null
-        })
+        }, ICON_DOWNLOAD_COUNTER_SELECTOR)
 
-        if (counter?.[1] !== 100) {
-            throw new Error('token expired')
+        console.log(counter)
+
+        if (counter[0] >= counter[1]) {
+            throw new Error('Download limit reached')
         }
 
         const count = counter[0]
@@ -92,7 +107,23 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
             return thumb?.getAttribute('src')
         })
 
-        await page.click(DOWNLOAD_BUTTON_SELECTOR)
+        await page.evaluate(() => {
+            const nativeDownloadButton = document.querySelector('a[data-cy="download-button"]') as HTMLButtonElement
+            const preDownloadButton = Array.from(document.querySelectorAll('button')).filter(button => button.innerText === 'Download')
+
+            if (nativeDownloadButton) {
+                nativeDownloadButton.click()
+            } else {
+                preDownloadButton[0]?.click()
+
+                setTimeout(() => {
+                    const downloadButton = document.querySelector('a[data-cy="download-button"]') as HTMLButtonElement
+                    console.log('downloadButton', downloadButton)
+                    downloadButton?.click()
+                }, 1000)
+            }
+        })
+
         console.info('downloading', url)
 
         refreshCookie(await page.cookies())
@@ -122,7 +153,7 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
     }
 }
 
-function refreshCookie(cookie: Protocol.Network.CookieParam[]) {
+function refreshCookie(cookie: CookieParam[]) {
     const cookiesObject = cookie.reduce((a, c) => {
         a[c.name] = c.value
         return a
