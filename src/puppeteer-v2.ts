@@ -100,7 +100,7 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
             throw new Error('Download limit reached')
         }
 
-        const count = counter[0]
+        const [count, maxCount] = counter
 
         const thumbnail = await page.evaluate(() => {
             const thumb = document.querySelector('.thumb')
@@ -135,7 +135,7 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
                 const files = readdirSync(DOWNLOAD_PATH + '/')
                 const file = files.find((v) => v.includes(filename) && !v.includes('.crdownload'))
                 if (file) {
-                    const downloaded = new Downloaded(join(resolve('./download'), './' + file), file, thumbnail, count, counter[1])
+                    const downloaded = new Downloaded(join(resolve('./download'), './' + file), file, thumbnail, count, maxCount)
                     console.info('downloaded', url)
                     res(downloaded)
                     clearInterval(interval)
