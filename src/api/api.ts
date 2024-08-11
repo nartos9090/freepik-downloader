@@ -33,7 +33,17 @@ app.get('/v2/download', async (req, res) => {
 
     try {
         const file = await freepik.downloadByUrlV2(url)
-        await res.json(file)
+
+        // set headers of count
+        res.setHeader('count', file.count)
+        res.setHeader('max-count', file.maxCount)
+        res.setHeader('filename', file.filename)
+        res.setHeader('size', file.size)
+
+        // set content disposition
+        res.setHeader('Content-Disposition', `attachment; filename="${file.filename}"`)
+        await res.send(file.get())
+
         setTimeout(() => {
             file.delete()
         }, 100000)

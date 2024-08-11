@@ -135,7 +135,7 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
                 const files = readdirSync(DOWNLOAD_PATH + '/')
                 const file = files.find((v) => v.includes(filename) && !v.includes('.crdownload'))
                 if (file) {
-                    const downloaded = new Downloaded(join(resolve('./download'), './' + file), file, thumbnail, count)
+                    const downloaded = new Downloaded(join(resolve('./download'), './' + file), file, thumbnail, count, counter[1])
                     console.info('downloaded', url)
                     res(downloaded)
                     clearInterval(interval)
@@ -167,14 +167,16 @@ export class Downloaded {
     public filename: string
     public thumbnail: string
     public count: number
+    public maxCount: number
     public size: number
     public mime: string
 
-    constructor(path, filename, thumbnail, count) {
+    constructor(path, filename, thumbnail, count, maxCount) {
         this.path = path
         this.filename = filename
         this.thumbnail = thumbnail
         this.count = count
+        this.maxCount = maxCount
         const stat = statSync(path)
         this.size = stat.size
         // this.mime = mimeTypes.contentType(path.extname(path))
