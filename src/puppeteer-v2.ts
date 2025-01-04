@@ -109,18 +109,25 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
 
         await page.evaluate(() => {
             const nativeDownloadButton = document.querySelector('a[data-cy="download-button"]') as HTMLButtonElement
-            const preDownloadButton = Array.from(document.querySelectorAll('button')).filter(button => button.innerText === 'Download')
+            console.log('nativeDownloadButton', nativeDownloadButton)
 
             if (nativeDownloadButton) {
                 nativeDownloadButton.click()
             } else {
-                preDownloadButton[0]?.click()
+                const preDownloadButton: HTMLElement[] = Array.from(document.querySelectorAll('button[data-cy="wrapper-download-free"]>button'))
+
+                console.log('preDownloadButton', preDownloadButton)
+
+                new Set(preDownloadButton).forEach((button) => {
+                    console.log(button)
+                    button.click()
+                })
 
                 setTimeout(() => {
                     const downloadButton = document.querySelector('a[data-cy="download-button"]') as HTMLButtonElement
                     console.log('downloadButton', downloadButton)
                     downloadButton?.click()
-                }, 1000)
+                }, 2000)
             }
         })
 

@@ -18,41 +18,37 @@ export async function downloadByUrl(url: string): Promise<Downloaded> {
     file_format = '.jpg'
   }
 
-  try {
-    await checkAndRefreshCookie(url)
-    let download_url = 'https://www.freepik.com/download-file/' + id
-    return await axios.get(download_url, {
-      responseType: 'stream'
-    }).then(res => {
-      // if (!res.headers["content-disposition"]) {
-      //   throw "Download failed"
-      // }
+  await checkAndRefreshCookie(url)
+  let download_url = 'https://www.freepik.com/download-file/' + id
+  return await axios.get(download_url, {
+    responseType: 'stream'
+  }).then(res => {
+    // if (!res.headers["content-disposition"]) {
+    //   throw "Download failed"
+    // }
 
-      // const filename = res.headers["content-disposition"].split('filename=')[1].split(';')[0]
-      const filename = id + file_format
-      return new Promise((resolve, reject) => {
-        const path = join(__dirname, '../download/', filename)
-        const writer = createWriteStream(path)
+    // const filename = res.headers["content-disposition"].split('filename=')[1].split(';')[0]
+    const filename = id + file_format
+    return new Promise<Downloaded>((resolve, reject) => {
+      const path = join(__dirname, '../download/', filename)
+      const writer = createWriteStream(path)
 
-        res.data.pipe(writer)
-        let error = null
+      res.data.pipe(writer)
+      let error = null
 
-        writer.on('error', err => {
-          error = err
-          writer.close()
-          reject(err)
-        })
+      writer.on('error', err => {
+        error = err
+        writer.close()
+        reject(err)
+      })
 
-        writer.on('close', () => {
-          if (!error) {
-            resolve(new Downloaded(path, filename))
-          }
-        })
+      writer.on('close', () => {
+        if (!error) {
+          resolve(new Downloaded(path, filename))
+        }
       })
     })
-  } catch (e) {
-    throw e
-  }
+  })
 }
 
 class Downloaded {
