@@ -5,3 +5,4 @@ dist/
 storage/cookie
 storage/cookie.json
 .env
+queue.db

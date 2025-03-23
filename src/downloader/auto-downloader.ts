@@ -9,12 +9,12 @@ const DOWNLOAD_PATH = resolve('./download')
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 
 // selector
-const ICON_DOWNLOAD_COUNTER_SELECTOR = 'a[href="/user/downloads#from-element=dropdown_menu"]'
+const DOWNLOAD_COUNTER_SELECTOR = 'div#__next>div:nth-child(2)>div:nth-child(3)>div:nth-child(3)>div:nth-child(1)>div:nth-child(2)'
 const NATIVE_DOWNLOAD_BUTTON_SELECTOR = 'a[data-cy="download-button"]'
 const SUBSCRIPTION_STATUS_SELECTOR = '*[data-cy="popover-user-my-subscription"]>button>*:nth-child(2)'
 const THUMBNAIL_SELECTOR = '*[data-cy="resource-detail-preview"]>img'
 const PRE_DOWNLOAD_BUTTON_SELECTOR = 'button[data-cy="wrapper-download-free"]>button'
-const USER_PROFILE_SELECTOR = 'button:has(img[alt="avatar"])'
+const SIGN_IN_BUTTON_SELECTOR = '*[data-cy="signin-button"]'
 
 let browser: Browser
 let page: Page
@@ -66,6 +66,26 @@ const sleep = async (duration: number) => {
     })
 }
 
+const getCounter = async () => {
+    await page.waitForSelector(DOWNLOAD_COUNTER_SELECTOR, { timeout: 10000 }).catch(() => {
+        throw new Error('Download counter not found')
+    })
+
+    const counter = await page.evaluate((DOWNLOAD_COUNTER_SELECTOR) => {
+        const counterRaw = (document.querySelector(DOWNLOAD_COUNTER_SELECTOR) as HTMLDivElement)?.innerText
+        if (counterRaw) {
+            return counterRaw.split('/').map(Number)
+        }
+        return null
+    }, DOWNLOAD_COUNTER_SELECTOR)
+
+    if (!counter) {
+        throw new Error('Download counter error')
+    }
+
+    return counter as [number, number]
+}
+
 export const downloadByUrl = async (url: string): Promise<Downloaded> => {
     if (!browser) {
         await boot()
@@ -74,50 +94,33 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
     await setCookie()
 
     try {
-        await page.goto(url)
+        await page.goto('https://www.freepik.com/user/my-subscriptions')
+
+        await sleep(3000)
+
+        await page.goto('https://www.freepik.com/user/downloads')
 
         await sleep(5000)
 
-        await page.waitForSelector(USER_PROFILE_SELECTOR, { timeout: 10000 }).catch(() => {
-            throw new Error('Token expired 1')
-        })
+        const sign_in_button = await page.evaluate((SIGN_IN_BUTTON_SELECTOR) => {
+            return document.querySelector(SIGN_IN_BUTTON_SELECTOR) as HTMLAnchorElement
+        }, SIGN_IN_BUTTON_SELECTOR)
 
-        await page.click(USER_PROFILE_SELECTOR)
-
-        await sleep(1000)
-
-        const subscription_status = await page.evaluate((SUBSCRIPTION_STATUS_SELECTOR) => {
-            return (document.querySelector(SUBSCRIPTION_STATUS_SELECTOR) as HTMLDivElement)?.innerText
-        }, SUBSCRIPTION_STATUS_SELECTOR)
-
-        if (!subscription_status) {
-            throw new Error('Subscription status not found')
+        if (sign_in_button) {
+            throw new Error('Token expired')
         }
 
-        let count = 0
-        let maxCount = 0
+        refreshCookie(await client.send('Network.getAllCookies'))
 
-        if (subscription_status === 'Free') {
-            console.warn('Account subscription type is "Free". Download counter would not work.')
-        } else {
-            await page.waitForSelector(ICON_DOWNLOAD_COUNTER_SELECTOR, { timeout: 10000 }).catch(() => {
-                throw new Error('Token expired 2')
-            })
+        const [count, maxCount] = await getCounter()
 
-            const counter = await page.evaluate((ICON_DOWNLOAD_COUNTER_SELECTOR) => {
-                const counterRaw = ((document.querySelector(ICON_DOWNLOAD_COUNTER_SELECTOR)?.parentElement?.childNodes[1] as HTMLDivElement)?.childNodes[0] as HTMLDivElement)?.innerText
-                if (counterRaw) {
-                    return counterRaw.split('/').map(Number)
-                }
-                return null
-            }, ICON_DOWNLOAD_COUNTER_SELECTOR)
-
-            if (counter[0] >= counter[1]) {
-                throw new Error('Download limit reached')
-            }
-
-            [count, maxCount] = counter
+        if (count >= maxCount) {
+            throw new Error('Download limit reached')
         }
+
+        await page.goto(url)
+
+        await sleep(5000)
 
         const thumbnail = await page.evaluate((THUMBNAIL_SELECTOR) => {
             const thumb = document.querySelector(THUMBNAIL_SELECTOR)
@@ -148,8 +151,6 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
 
         console.info('downloading', url)
 
-        refreshCookie(await client.send('Network.getAllCookies'))
-
         return await new Promise((res, rej) => {
             const filename = url.replace(/^https?:\/\//, '').split('/')[2].split('_')[0]
             let counter = 0
@@ -163,6 +164,7 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
                     clearInterval(interval)
                 }
                 if (counter >= 100) {
+                    console.log(counter)
                     console.error('failed to download', url)
                     rej()
                 }
@@ -182,4 +184,6 @@ function refreshCookie(cookie: Protocol.Network.GetAllCookiesResponse) {
     }, {})
 
     saveCookie(cookiesObject)
+
+    console.info('cookie refreshed')
 }

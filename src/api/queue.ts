@@ -55,6 +55,7 @@ const download = async (item) => {
         Queue.dequeue(item.id, payload.filename)
     } catch (e) {
         console.log('failed to download', item.download_url)
+        console.log(e)
         if (e.message === 'Error: token expired') {
             payload.status = 'token expired'
             loggedIn = false
