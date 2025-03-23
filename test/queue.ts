@@ -13,7 +13,7 @@ const id = Math.random().toString(36).substring(2, 10)
 const download_url = process.env.TEST_DOWNLOAD_URL
 const cookie = process.env.TEST_COOKIE
 
-const API_URL = 'http://localhost:3000'
+const API_URL = 'https://freepik-api.widyaardianto.com'
 const apiInstance = axios.create({
     baseURL: API_URL,
 })

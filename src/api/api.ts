@@ -2,7 +2,7 @@ import freepik from '../index'
 import downloadQueue, { setLoggedIn } from "./queue"
 import { join, resolve } from "path"
 import { Queue } from "./model"
-import { FREEPIK_DOWNLOADER_API_PORT } from '../config'
+import { API_PORT } from '../config'
 
 const bodyParser = require('body-parser')
 const express = require('express')
@@ -62,6 +62,6 @@ app.get('/v2/queue/download', async (req, res) => {
     Queue.setGarbage(id)
 })
 
-app.listen(FREEPIK_DOWNLOADER_API_PORT, () => {
-    console.log(`Listening on port ${FREEPIK_DOWNLOADER_API_PORT}`)
+app.listen(API_PORT, () => {
+    console.log(`Listening on port ${API_PORT}`)
 })
