@@ -47,7 +47,7 @@ const download = async (id: string) => {
 
     writer.on('finish', async () => {
         console.log(`File downloaded successfully as ${filePath}`);
-        // unlinkSync(filePath)
+        unlinkSync(filePath)
     })
 }
 
