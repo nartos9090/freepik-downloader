@@ -1,9 +1,7 @@
-import {setCookie} from './cookie'
-import {downloadByUrl} from './puppeteer'
-import {downloadByUrl as downloadByUrlV2} from './puppeteer-v2'
+import { setCookie } from './cookie/cookie'
+import { downloadByUrl as downloadByUrlV2 } from './downloader/auto-downloader'
 
 export default {
   setCookie,
-  downloadByUrl,
   downloadByUrlV2
 }

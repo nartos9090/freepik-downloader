@@ -1,12 +1,7 @@
-import {Queue} from './model'
+import { Queue } from './model'
 import freepik from '../index'
 import axios from "axios";
-import {Downloaded} from "../puppeteer-v2";
-
-type QueueItem = {
-    webhook_url: string
-    download_url: string
-}
+import { WebhookPayload } from './type';
 
 let loggedIn: boolean = true
 
@@ -16,49 +11,57 @@ export const setLoggedIn = () => {
 }
 
 const start = async () => {
-    if (!loggedIn || await Queue.count({status: 'downloading'})) {
+    if (!loggedIn || await Queue.isDownloading()) {
         return
     }
-    let item = await Queue.findOne({status: 'queued'})
-    while (item && loggedIn) {
+
+    let item
+    do {
         if (item) {
             await download(item)
         }
-        item = await Queue.findOne({status: 'queued'})
-    }
+
+        item = await Queue.peek()
+    } while (item && loggedIn)
 }
 
-const add = async (item: QueueItem) => {
-    return Queue.create(item)
+const add = (webhook_url: string, download_url: string) => {
+    return Queue.enqueue(webhook_url, download_url)
 }
 
 const download = async (item) => {
-    await item.updateOne({status: 'downloading'})
+    Queue.updateStatus(item.id, "downloading")
 
-    const payload: any = {
+    const payload: WebhookPayload = {
         id: item.id,
         download_url: item.download_url,
         token: item.token,
+        status: null,
+        size: null,
+        filename: null,
+        thumbnail: null,
+        count: null,
     }
-    let file: Downloaded
 
     try {
-        file = await freepik.downloadByUrlV2(item.download_url)
+        const file = await freepik.downloadByUrlV2(item.download_url)
+
         payload.status = 'completed'
         payload.size = file.size
         payload.filename = file.filename
         payload.thumbnail = file.thumbnail
         payload.count = file.count
-        await item.updateOne({status: 'completed', filename: file.filename})
+
+        Queue.dequeue(item.id, payload.filename)
     } catch (e) {
         console.log('failed to download', item.download_url)
         if (e.message === 'Error: token expired') {
             payload.status = 'token expired'
             loggedIn = false
-            await item.updateOne({status: 'queued'})
+            Queue.updateStatus(item.id, "queued")
         } else {
             payload.status = 'failed'
-            await item.updateOne({status: 'failed'})
+            Queue.updateStatus(item.id, "failed")
         }
     }
 

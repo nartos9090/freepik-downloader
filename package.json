@@ -8,8 +8,10 @@
     "prepare": "npm run build",
     "build": "tsc --build --clean && tsc",
     "api": "node dist/api/api.js",
+    "api-no-queue": "node dist/api/api-no-queue.js",
     "dev:api": "ts-node src/api/api.ts",
-    "test": "ts-node test.ts"
+    "test": "ts-node test/test.ts",
+    "test:queue": "ts-node test/queue.ts"
   },
   "repository": {
     "type": "git",
@@ -26,16 +28,17 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.27.2",
+    "better-sqlite3": "^11.9.1",
     "body-parser": "^1.20.0",
     "cookie-parse": "^0.4.0",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
     "fs-extra": "^10.1.0",
     "mime-types": "^2.1.35",
-    "mongoose": "^6.9.1",
     "path": "^0.12.7",
     "puppeteer": "^23.0.2",
-    "set-cookie-parser": "^2.5.1"
+    "set-cookie-parser": "^2.5.1",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@types/node": "^18.7.2",

@@ -1,7 +1,12 @@
-import axios from './axios'
+/**
+ * NOT WORKING
+ * but there is new native downloader flow that can be implemented.
+ */
+
+import axios from '../lib/axios'
 import {join} from 'path'
 import {readFileSync, unlinkSync, createWriteStream} from "fs";
-import {checkAndRefreshCookie} from "./cookie";
+import {checkAndRefreshCookie} from "../cookie/cookie";
 
 const ID_PATTERN = /\d+?(?=\.htm)/
 

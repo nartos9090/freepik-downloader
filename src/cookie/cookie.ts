@@ -1,8 +1,8 @@
 import {parse as cookieParse} from 'cookie-parse'
 import {existsSync, readFileSync, unlinkSync, writeFileSync} from 'fs'
-import {COOKIE_FILE} from "./constants";
-import axios from "./axios";
+import axios from "../lib/axios";
 import {parse as setCookieParse} from 'set-cookie-parser'
+import { COOKIE_FILE } from '../config';
 
 export async function setCookie(value: string) {
   const cookie = cookieParse(value)

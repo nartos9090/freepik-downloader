@@ -1,6 +1,6 @@
-import axios from "axios";
-import {readFileSync} from "fs";
-import {COOKIE_FILE} from "./constants";
+import axios from "axios"
+import { readFileSync } from "fs"
+import { COOKIE_FILE } from "../config"
 
 axios.defaults.withCredentials = true
 
