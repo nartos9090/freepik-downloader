@@ -4,8 +4,14 @@
     "target": "es6",
     "declaration": true,
     "outDir": "./dist",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
   },
-  "include": ["src"],
-  "exclude": ["storage", "node_modules"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "storage",
+    "node_modules"
+  ]
 }
