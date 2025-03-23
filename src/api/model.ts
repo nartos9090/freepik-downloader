@@ -1,7 +1,7 @@
 import * as Database from 'better-sqlite3'
 import { existsSync, writeFileSync } from 'fs'
 import { resolve } from 'path'
-import { v4 as uuidv4 } from 'uuid'
+import * as uuid from 'uuid'
 
 const DB_PATH = resolve('./queue.db')
 
@@ -29,7 +29,7 @@ export type QueueStatus = 'queued' | 'downloading' | 'completed' | 'failed'
 export const Queue = {
     enqueue: (webhook_url: string, download_url: string) => {
         const stmt = db.prepare(`INSERT INTO queue (id, webhook_url, download_url) VALUES (?, ?, ?)`)
-        return stmt.run(uuidv4(), webhook_url, download_url)
+        return stmt.run(uuid.v4(), webhook_url, download_url)
     },
     updateStatus: (id: string, status: QueueStatus) => {
         const stmt = db.prepare(`UPDATE queue SET id = ? WHERE status = ?`)
