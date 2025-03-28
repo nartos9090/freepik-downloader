@@ -5,7 +5,7 @@ import puppeteer, { Browser, CDPSession, CookieParam, Page, Protocol } from 'pup
 import { PUPPETEER_ARGS, PUPPETEER_EXECUTABLE_PATH, PUPPETEER_HEADLESS } from '../config';
 import { Downloaded } from '../type';
 
-const DOWNLOAD_PATH = resolve('./download')
+const DOWNLOAD_PATH = resolve(__dirname, './download')
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 
 // selector
@@ -158,7 +158,7 @@ export const downloadByUrl = async (url: string): Promise<Downloaded> => {
                 const files = readdirSync(DOWNLOAD_PATH + '/')
                 const file = files.find((v) => v.includes(filename) && !v.includes('.crdownload'))
                 if (file) {
-                    const downloaded = new Downloaded(join(resolve('./download'), './' + file), file, thumbnail, count, maxCount)
+                    const downloaded = new Downloaded(join(resolve(__dirname, './download'), './' + file), file, thumbnail, count, maxCount)
                     console.info('downloaded', url)
                     res(downloaded)
                     clearInterval(interval)
