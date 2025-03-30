@@ -168,6 +168,7 @@ export const downloadByUrl = async (url: string, cookiesObject?: object): Promis
                 if (counter >= 100) {
                     console.log(counter)
                     console.error('failed to download', url)
+                    clearInterval(interval)
                     rej()
                 }
                 counter++
