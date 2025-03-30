@@ -41,9 +41,11 @@ const boot = async () => {
     })
 }
 
-const setCookie = async () => {
+const setCookie = async (cookiesObject?: object) => {
     const excludeCookie = ['OptanonConsent']
-    const cookiesObject = getSavedCookie()
+    if (!cookiesObject) {
+        cookiesObject = getSavedCookie()
+    }
     const cookies = Object.keys(cookiesObject)
         .map((key, index): CookieParam => ({
             name: key,
@@ -86,12 +88,12 @@ const getCounter = async () => {
     return counter as [number, number]
 }
 
-export const downloadByUrl = async (url: string): Promise<Downloaded> => {
+export const downloadByUrl = async (url: string, cookiesObject?: object): Promise<Downloaded> => {
     if (!browser) {
         await boot()
     }
 
-    await setCookie()
+    await setCookie(cookiesObject)
 
     try {
         await page.goto('https://www.freepik.com/user/my-subscriptions')
