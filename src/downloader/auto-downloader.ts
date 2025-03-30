@@ -10,7 +10,7 @@ const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
 
 // selector
 const DOWNLOAD_COUNTER_SELECTOR = 'div#__next>div:nth-child(2)>div:nth-child(3)>div:nth-child(3)>div:nth-child(1)>div:nth-child(2)'
-const NATIVE_DOWNLOAD_BUTTON_SELECTOR = 'a[data-cy="download-button"]'
+const NATIVE_DOWNLOAD_BUTTON_SELECTOR = 'a[data-cy="download-button"], button[data-cy="download-svg-button"]'
 const SUBSCRIPTION_STATUS_SELECTOR = '*[data-cy="popover-user-my-subscription"]>button>*:nth-child(2)'
 const THUMBNAIL_SELECTOR = '*[data-cy="resource-detail-preview"]>img'
 const PRE_DOWNLOAD_BUTTON_SELECTOR = 'button[data-cy="wrapper-download-free"]>button'
